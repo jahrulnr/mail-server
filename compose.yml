@@ -1,0 +1,20 @@
+version: "3"
+services:
+  mail-server:
+    image: mail-server
+    container_name: vm-mail-server
+    privileged: true
+    # command: tail -f /dev/stdout
+    env_file: mail.env
+    volumes:
+      - ./config/postfix/virtual:/etc/postfix/virtual
+      - ./data/keys:/etc/opendkim/keys
+      - ./data/mail:/var/mail
+    expose:
+      - 465
+
+  fake-server:
+    image: dockage/mailcatcher:0.9.0
+    container_name: fake-server
+    ports:
+      - "127.0.0.1:8081:1080"
