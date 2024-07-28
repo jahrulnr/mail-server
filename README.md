@@ -56,7 +56,7 @@ To customize the configuration, edit the `mail.env` and `config/postfix/virtual`
     v=spf1 a mx ip4:YOUR_SERVER_IP ~all
     ```
 
-    Replace YOUR_SERVER_IP with the IP address of your mail server. The include:_spf.google.com part is optional and only necessary if you are using Google's servers to send emails as well.
+    Replace YOUR_SERVER_IP with the IP address of your mail server
 
 2. **Update DNS Settings**: Ensure your DNS records are properly updated to reflect these changes. This will help reduce the likelihood of your emails being rejected or marked as spam.
 
