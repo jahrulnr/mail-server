@@ -5,13 +5,15 @@ services:
     container_name: vm-mail-server
     privileged: true
     # command: tail -f /dev/stdout
+    cap_add:
+      - SYS_ADMIN
     env_file: mail.env
     volumes:
       - ./config/postfix/virtual:/etc/postfix/virtual
       - ./data/keys:/etc/opendkim/keys
       - ./data/mail:/var/mail
     expose:
-      - 465
+      - 25
 
   fake-server:
     image: dockage/mailcatcher:0.9.0

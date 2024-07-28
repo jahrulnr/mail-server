@@ -7,5 +7,5 @@ up: build
 bash:
 	docker exec -it vm-mail-server bash
 
-save: build
+save: up
 	docker save mail-server | gzip > mail-server.tar.gz
