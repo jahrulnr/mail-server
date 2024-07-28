@@ -41,7 +41,8 @@ COPY ./config/test.sh /tmp/test.sh
 RUN chmod +x /bin/systemctl /start.sh /run/postfix.sh /tmp/test.sh \
     && mkdir /etc/opendkim/keys \
     && chown -R opendkim:opendkim /etc/opendkim \
-    && ln -s /etc/opendkim/opendkim.conf /etc/opendkim.conf
+    && ln -s /etc/opendkim/opendkim.conf /etc/opendkim.conf \
+    && ln -s /var/mail /var/spool/mail
 
 EXPOSE 25
 

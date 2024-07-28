@@ -33,41 +33,33 @@ opendkim-testkey -d $DOMAIN -s default -vvv
 echo "[info] setup postfix"
 echo $DOMAIN > /etc/mailname
 
-postconf -e "smtpd_tls_cert_file = /etc/ssl/certs/ssl-cert-snakeoil.pem"
-postconf -e "smtpd_tls_key_file = /etc/ssl/private/ssl-cert-snakeoil.key"
-postconf -e "smtpd_tls_security_level = may"
-postconf -e "home_mailbox = ${MAIL_BOX}/"
-postconf -e "smtpd_use_tls = yes"
-postconf -e "smtpd_tls_auth_only = yes"
-postconf -e "smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination"
-postconf -e "smtp_tls_CApath = /etc/ssl/certs"
-postconf -e "smtp_tls_security_level = encrypt"
-postconf -e "smtp_tls_session_cache_database = btree:\${data_directory}/smtp_scache"
-postconf -e "myhostname = ${DOMAIN}"
-postconf -e "alias_maps = hash:/etc/aliases"
-postconf -e "alias_database = hash:/etc/aliases"
-postconf -e "myorigin = /etc/mailname"
-postconf -e "mydestination = \$myhostname, ${DOMAIN}, localhost.localdomain, localhost"
-postconf -e "relayhost = "
+postconf -e "virtual_maps = hash:/etc/postfix/virtual"
+postconf -e "mydestination = \$myhostname, localhost.\$mydomain, localhost, ${DOMAIN}"
 postconf -e "mynetworks = 127.0.0.0/8 172.0.0.0/8"
 postconf -e "mailbox_size_limit = 0"
 postconf -e "recipient_delimiter = +"
 postconf -e "inet_interfaces = all"
 postconf -e "inet_protocols = ipv4"
 postconf -e "smtpd_milters = inet:127.0.0.1:8891"
+postconf -e "smtpd_use_tls = yes"
+postconf -e "smtpd_tls_auth_only = yes"
+postconf -e "smtpd_recipient_restrictions = check_policy_service unix:private/policyd-spf"
+postconf -e "smtpd_tls_security_level = may"
+postconf -e "smtpd_tls_cert_file = /etc/ssl/certs/ssl-cert-snakeoil.pem"
+postconf -e "smtpd_tls_key_file = /etc/ssl/private/ssl-cert-snakeoil.key"
+postconf -e "smtp_tls_CApath = /etc/ssl/certs"
+postconf -e "smtp_tls_security_level = encrypt"
+postconf -e "smtp_tls_session_cache_database = btree:\${data_directory}/smtp_scache"
 postconf -e "non_smtpd_milters = \$smtpd_milters"
 postconf -e "milter_protocol = 6"
 postconf -e "milter_default_action = accept"
-postconf -e "receive_override_options = no_address_mappings"
 postconf -e "policyd-spf_time_limit = 3600"
-postconf -e "smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination, check_policy_service unix:private/policyd-spf"
-postconf -e 'smtpd_tls_protocols = !SSLv2, !SSLv3'
-postconf -e 'smtp_tls_protocols = !SSLv2, !SSLv3'
-
-postconf -e "maillog_file = /var/mail/postfix.log"
-chmod 600 /etc/postfix/virtual
+postconf -e "maillog_file = ${MAIL_BOX}/postfix.log"
+postconf -e "maillog_file_prefixes = /var, /dev/stdout"
 touch /etc/postfix/virtual.db
-chown postfix:postfix /etc/postfix/virtual.db
+chown 0:0 /etc/postfix/virtual /etc/postfix/virtual.db
+chmod 644 /etc/postfix/virtual /etc/postfix/virtual.db
+chown postfix:postfix ${MAIL_BOX}
 postfix set-permissions
 postmap /etc/postfix/master.cf
 postmap /etc/postfix/main.cf
