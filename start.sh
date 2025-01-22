@@ -33,6 +33,7 @@ opendkim-testkey -d $DOMAIN -s default -vvv
 echo "[info] setup postfix"
 echo $DOMAIN > /etc/mailname
 
+postconf -e "myhostname = ${DOMAIN}"
 postconf -e "virtual_maps = hash:/etc/postfix/virtual"
 postconf -e "mydestination = \$myhostname, localhost.\$mydomain, localhost, ${DOMAIN}"
 postconf -e "mynetworks = 127.0.0.0/8 172.0.0.0/8"
